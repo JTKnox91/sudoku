@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sudoku/models/board.dart';
+import 'package:sudoku/ui/widgets/board_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -9,8 +11,10 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Sudoku Solver & Visualizer'),
       ),
-      body: const Center(
-        child: Text('Sudoku board will go here'),
+      body: Center(
+        child: BoardWidget(
+          board: Board(),
+        ),
       ),
     );
   }
