@@ -2,15 +2,17 @@ import 'package:sudoku/core/value.dart';
 import 'dart:collection';
 
 class Cell {
-  Value? value;
+  Value? _value;
   final Set<Value> _candidates = Set.from(Value.values);
 
-  UnmodifiableSetView<Value> get candidates => UnmodifiableSetView(_candidates);
+  Value? get value => _value;
+
+  Set<Value> get candidates => UnmodifiableSetView(_candidates);
 
   Cell();
 
   void setValue(Value newValue) {
-    value = newValue;
+    _value = newValue;
     _candidates.clear();
   }
 
