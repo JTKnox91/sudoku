@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:sudoku/ui/widgets/cell_widget.dart';
 
 class BoxWidget extends StatelessWidget {
+  static const baseColor = Colors.white;
+  static final offsetColor = Colors.grey.shade200;
+
   final int boxNumber;
 
   const BoxWidget({
@@ -14,8 +17,8 @@ class BoxWidget extends StatelessWidget {
     final boxRow = ((boxNumber - 1) ~/ 3) * 3 + 1;
     final boxCol = ((boxNumber - 1) % 3) * 3 + 1;
     final backgroundColor = boxNumber % 2 == 0
-        ? Colors.white
-        : Colors.grey.shade200; 
+        ? BoxWidget.baseColor
+        : BoxWidget.offsetColor;
 
     return Container(
       decoration: BoxDecoration(
