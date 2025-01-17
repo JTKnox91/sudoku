@@ -1,28 +1,31 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:sudoku/core/value.dart';
-import 'package:sudoku/models/cell.dart';
+import 'package:sudoku/ui/providers/board_provider.dart';
+import 'package:sudoku/core/cell_name.dart';
 
 class CellWidget extends StatelessWidget {
-  static const double size = 40.0;
+  final String name;
 
-  final Cell cell;
-
-  const CellWidget({
+  CellWidget({
     super.key,
-    required this.cell,
-  });
+    required int row,
+    required int col,
+  }) : name = cellName(row, col);
 
   @override
   Widget build(BuildContext context) {
+    final board = BoardProvider.of(context);
+    final cell = board.cells[name]!;
+
     return Container(
-      width: size,
-      height: size,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.black,
+          width: 1.0,
+          ),
+        ),
       child: Center(
         child: Text(
-          // TODO: Remove after testing layout
-          Value.fromInt(Random().nextInt(9)+1).toString(),
-          // cell.value?.toString() ?? '',
+          cell.value?.toString() ?? '',
           style: const TextStyle(fontSize: 20),
         ),
       ),
