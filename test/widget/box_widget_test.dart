@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sudoku/core/cell_name.dart';
 import 'package:sudoku/models/board.dart';
-import 'package:sudoku/ui/providers/board_provider.dart';
 import 'package:sudoku/ui/widgets/box_widget.dart';
 import 'package:sudoku/ui/widgets/cell_widget.dart';
+import 'package:provider/provider.dart';
 
 class TestCase {
   final int boxNumber;
@@ -34,8 +34,8 @@ void main() {
 
       for (final testCase in testCases) {
         await tester.pumpWidget(MaterialApp(
-          home: BoardProvider(
-            board: Board(),
+          home: ChangeNotifierProvider<Board>(
+            create: (context) => Board(),
             child: BoxWidget(boxNumber: testCase.boxNumber),
           ),
         ));
@@ -53,8 +53,8 @@ void main() {
     testWidgets('renders correct background colors', (tester) async {
       for (int i = 1; i <= 9; i++) {
         await tester.pumpWidget(MaterialApp(
-          home: BoardProvider(
-            board: Board(),
+          home: ChangeNotifierProvider<Board>(
+            create: (context) => Board(),
             child: BoxWidget(boxNumber: i),
           ),
         ));

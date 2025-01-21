@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 import 'package:sudoku/core/cell_name.dart';
 import 'package:sudoku/core/value.dart';
 import 'package:sudoku/models/board.dart';
-import 'package:sudoku/ui/providers/board_provider.dart';
 import 'package:sudoku/ui/widgets/cell_widget.dart';
 
 class TestCase {
@@ -34,8 +34,8 @@ class CellWidgetTest extends StatelessWidget {
         child: SizedBox(
           height: cellSize * cellWidgetsGrid.length,
           width: cellSize * cellWidgetsGrid[0].length,
-          child: BoardProvider(
-            board: board,
+          child: ChangeNotifierProvider<Board>(
+            create: (context) => board,
             child: Column(
               children: cellWidgetsGrid.map((cellWidgetsRow) {
                 return Expanded(

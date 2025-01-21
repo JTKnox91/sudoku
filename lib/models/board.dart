@@ -1,9 +1,11 @@
+import 'dart:collection';
+
+import 'package:flutter/foundation.dart';
 import 'package:sudoku/core/cell_name.dart';
 import 'package:sudoku/core/has_cells.dart';
 import 'package:sudoku/models/cell.dart';
-import 'dart:collection';
 
-class Board implements HasCells {
+class Board with ChangeNotifier implements HasCells {
   static const int size = 9;
 
   final Map<CellName, Cell> _cells = {};
@@ -11,8 +13,8 @@ class Board implements HasCells {
   @override
   UnmodifiableMapView<CellName, Cell> get cells => UnmodifiableMapView(_cells);
   
-  Cell? _selectedCell;
-  Cell? get selectedCell => _selectedCell;
+  CellName? _selectedCellName;
+  Cell? get selectedCell => _selectedCellName == null ? null : _cells[_selectedCellName]!;
   
   Board() {
     for (int row = 1; row <= Board.size; row++) {
@@ -23,10 +25,12 @@ class Board implements HasCells {
   }
 
   void selectCell(CellName? cellName) {
+    if (_selectedCellName == cellName) return;
     if (cellName == null) {
-      _selectedCell = null;
+      _selectedCellName = null;
     } else {
-      _selectedCell = cells[cellName]!;
+      _selectedCellName = cellName;
     }
+    notifyListeners();
   }
-} 
+}
