@@ -9,9 +9,9 @@ import 'package:sudoku/ui/widgets/cell_widget.dart';
 class TestCase {
   final int row;
   final int col;
-  final String expectedName;
+  final CellName expectedName;
 
-  TestCase(this.row, this.col) : expectedName = cellName(row, col);
+  TestCase(this.row, this.col) : expectedName = CellName(row, col);
 }
 
 class CellWidgetTest extends StatelessWidget {
@@ -22,7 +22,7 @@ class CellWidgetTest extends StatelessWidget {
 
   CellWidgetTest(this.cellWidgetsGrid, {
     super.key,
-    board,
+    Board? board,
   }) : board = board ?? Board(),
     assert(cellWidgetsGrid.isNotEmpty && cellWidgetsGrid[0].isNotEmpty,
         'Cell Widgets must be non-empty');

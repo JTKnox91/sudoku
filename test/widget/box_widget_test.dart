@@ -9,7 +9,7 @@ import 'package:sudoku/ui/widgets/cell_widget.dart';
 class TestCase {
   final int boxNumber;
   final int cellPosition;
-  final String expectedName;
+  final CellName expectedName;
 
   TestCase(this.boxNumber, this.cellPosition, this.expectedName);
 }
@@ -19,17 +19,17 @@ void main() {
     testWidgets('passes correct row/col to CellWidgets', (tester) async {
       final testCases = [
         // Box 1, Cells 1, 5, 9
-        TestCase(1, 1, cellName(1, 1)),
-        TestCase(1, 5, cellName(2, 2)),
-        TestCase(1, 9, cellName(3, 3)),
+        TestCase(1, 1, CellName(1, 1)),
+        TestCase(1, 5, CellName(2, 2)),
+        TestCase(1, 9, CellName(3, 3)),
         // Box 9, Cells 1, 5, 9
-        TestCase(9, 1, cellName(7, 7)),
-        TestCase(9, 5, cellName(8, 8)),
-        TestCase(9, 9, cellName(9, 9)),
+        TestCase(9, 1, CellName(7, 7)),
+        TestCase(9, 5, CellName(8, 8)),
+        TestCase(9, 9, CellName(9, 9)),
         // Box 5, Cells 3, 5, 7
-        TestCase(5, 3, cellName(4, 6)),
-        TestCase(5, 5, cellName(5, 5)),
-        TestCase(5, 7, cellName(6, 4)),
+        TestCase(5, 3, CellName(4, 6)),
+        TestCase(5, 5, CellName(5, 5)),
+        TestCase(5, 7, CellName(6, 4)),
       ];
 
       for (final testCase in testCases) {

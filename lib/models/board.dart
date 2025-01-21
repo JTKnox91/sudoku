@@ -6,19 +6,27 @@ import 'dart:collection';
 class Board implements HasCells {
   static const int size = 9;
 
-  final Map<String, Cell> _cells = {};
+  final Map<CellName, Cell> _cells = {};
   
   @override
-  UnmodifiableMapView<String, Cell> get cells => UnmodifiableMapView(_cells);
+  UnmodifiableMapView<CellName, Cell> get cells => UnmodifiableMapView(_cells);
+  
+  Cell? _selectedCell;
+  Cell? get selectedCell => _selectedCell;
   
   Board() {
     for (int row = 1; row <= Board.size; row++) {
       for (int col = 1; col <= Board.size; col++) {
-        _cells[cellName(row, col)] = Cell();
+        _cells[CellName(row, col)] = Cell();
       }
     }
   }
 
-
-
+  void selectCell(CellName? cellName) {
+    if (cellName == null) {
+      _selectedCell = null;
+    } else {
+      _selectedCell = cells[cellName]!;
+    }
+  }
 } 

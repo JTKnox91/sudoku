@@ -10,13 +10,13 @@ class CellWidget extends StatelessWidget {
     fontWeight: FontWeight.w600,  // Semi-bold
   );
 
-  final String name;
+  final CellName name;
 
   CellWidget({
     super.key,
     required int row,
     required int col,
-  }) : name = cellName(row, col);
+  }) : name = CellName(row, col);
   
   @override
   Widget build(BuildContext context) {

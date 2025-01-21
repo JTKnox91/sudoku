@@ -16,10 +16,10 @@ void main() {
       expect(board.cells.values.every((cell) => cell.value == null), isTrue);
     });
 
-    test('cells are keyed by coordinate strings', () {
+    test('cells are keyed by CellName', () {
       for (int row = 1; row <= 9; row++) {
         for (int col = 1; col <= 9; col++) {
-          expect(board.cells[cellName(row, col)], isNotNull);
+          expect(board.cells[CellName(row, col)], isNotNull);
         }
       }
     });
@@ -30,9 +30,17 @@ void main() {
 
     test('cells map is unmodifiable', () {
       expect(
-        () => board.cells['1,1'] = Cell(),
+        () => board.cells[CellName(1, 1)] = Cell(),
         throwsUnsupportedError,
       );
-    });    
+    });
+
+    test('can select and unselect cells', () {
+      board.selectCell(CellName(1, 1));
+      expect(board.selectedCell, equals(board.cells[CellName(1, 1)]));
+      
+      board.selectCell(null);
+      expect(board.selectedCell, isNull);
+    });
   });
 } 
