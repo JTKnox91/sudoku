@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:sudoku/ui/providers/board_provider.dart';
+import 'package:sudoku/core/autoscale_text.dart';
 import 'package:sudoku/core/cell_name.dart';
+import 'package:sudoku/ui/providers/board_provider.dart';
+import 'package:sudoku/ui/widgets/candidates_widget.dart';
+
 
 class CellWidget extends StatelessWidget {
+  static const textStyle = TextStyle(
+    fontWeight: FontWeight.w600,  // Semi-bold
+  );
+
   final String name;
 
   CellWidget({
@@ -10,7 +17,7 @@ class CellWidget extends StatelessWidget {
     required int row,
     required int col,
   }) : name = cellName(row, col);
-
+  
   @override
   Widget build(BuildContext context) {
     final board = BoardProvider.of(context);
@@ -23,12 +30,13 @@ class CellWidget extends StatelessWidget {
           width: 1.0,
           ),
         ),
-      child: Center(
-        child: Text(
-          cell.value?.toString() ?? '',
-          style: const TextStyle(fontSize: 20),
+      child: cell.value == null ? 
+        CandidatesWidget(cell: cell) :
+        Center(
+          child: AutoScaleText(cell.value!.toString(), 0.75,
+            style: textStyle,
+          ),
         ),
-      ),
     );
   }
 } 

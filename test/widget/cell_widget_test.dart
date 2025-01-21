@@ -11,25 +11,62 @@ class TestCase {
   final int col;
   final String expectedName;
 
-  TestCase(this.row, this.col, this.expectedName);
+  TestCase(this.row, this.col) : expectedName = cellName(row, col);
+}
+
+class CellWidgetTest extends StatelessWidget {
+  static const double cellSize = 50;
+
+  final List<List<CellWidget>> cellWidgetsGrid;
+  final Board board;
+
+  CellWidgetTest(this.cellWidgetsGrid, {
+    super.key,
+    board,
+  }) : board = board ?? Board(),
+    assert(cellWidgetsGrid.isNotEmpty && cellWidgetsGrid[0].isNotEmpty,
+        'Cell Widgets must be non-empty');
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Center(
+        child: SizedBox(
+          height: cellSize * cellWidgetsGrid.length,
+          width: cellSize * cellWidgetsGrid[0].length,
+          child: BoardProvider(
+            board: board,
+            child: Column(
+              children: cellWidgetsGrid.map((cellWidgetsRow) {
+                return Expanded(
+                  child: Row(
+                    children: cellWidgetsRow.map((cellWidget) {
+                      return Expanded(child: cellWidget);
+                    }).toList(),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 void main() {
   group('CellWidget', () {
     testWidgets('uses correct cell name based on row/col', (tester) async {
       final testCases = <TestCase>[
-        TestCase(1, 1, cellName(1, 1)),  // First cell
-        TestCase(9, 9, cellName(9, 9)),  // Last cell
-        TestCase(4, 6, cellName(4, 6)),  // Something in the middle
+        TestCase(1, 1),  // First cell
+        TestCase(9, 9),  // Last cell
+        TestCase(4, 6),  // Something in the middle
       ];
 
       for (final testCase in testCases) {
-        await tester.pumpWidget(MaterialApp(
-          home: BoardProvider(
-            board: Board(),
-            child: CellWidget(row: testCase.row, col: testCase.col),
-          ),
-        ));
+        await tester.pumpWidget(CellWidgetTest([
+          [CellWidget(row: testCase.row, col: testCase.col)]
+        ]));
 
         final cell = tester.widget<CellWidget>(find.byType(CellWidget));
         expect(cell.name, equals(testCase.expectedName));
@@ -38,23 +75,44 @@ void main() {
 
     testWidgets('renders cell value correctly', (tester) async {
       final board = Board();
-      board.cells[cellName(1,1)]!.setValue(Value.five);
-      // board.cells[cellName(4,4)] value is null by default
+      const expectedValue = Value.five;
 
-      await tester.pumpWidget(MaterialApp(
-        home: BoardProvider(
-          board: board,
-          child: Column(
-            children: [
-              CellWidget(row: 1, col: 1),  // Should show "5"
-              CellWidget(row: 4, col: 4),  // Should be empty
-            ],
-          ),
+      final cellWidgetWithValue = CellWidget(row: 1, col: 1);
+      board.cells[cellWidgetWithValue.name]!.setValue(expectedValue);
+      // To be realistic, choosing a cell that would not be affected by sudoku rules.
+      final cellWidgetWithoutValue = CellWidget(row: 4, col: 4);
+
+      await tester.pumpWidget(CellWidgetTest([
+        [cellWidgetWithValue, cellWidgetWithoutValue]
+      ], board: board));
+
+      // Confirm underlying model state is correct before checking view layer.
+      assert(board.cells[cellWidgetWithValue.name]!.candidates.isEmpty, 
+          'Cell With Value should have no candidates');
+      assert(board.cells[cellWidgetWithoutValue.name]!.candidates.length == 9,
+          'Cell Without Value should have all candidates');
+
+      // Check cell with value '5' and no other numbers (no vandidates visible)
+      expect(
+        find.descendant(
+          of: find.byWidget(cellWidgetWithValue),
+          matching: find.text(expectedValue.toString())
         ),
-      ));
-
-      expect(find.text('5'), findsOneWidget);
-      expect(find.text(''), findsOneWidget);
+        findsOneWidget
+      );
+      
+      // Check cell with candidates has all numbers 1-9 exactly one (no additional text visible)
+      final foundCellWidgetWithoutValue = find.byWidget(cellWidgetWithoutValue);
+      for (final value in Value.values) {
+        expect(
+          find.descendant(
+            of: foundCellWidgetWithoutValue,
+            matching: find.text(value.toString())
+          ),
+          findsOneWidget,
+          reason: 'Should find candidate ${value.toString()} in empty cell'
+        );
+      }
     });
   });
 } 
