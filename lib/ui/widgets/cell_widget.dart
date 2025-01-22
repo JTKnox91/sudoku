@@ -3,10 +3,19 @@ import 'package:provider/provider.dart';
 import 'package:sudoku/core/autoscale_text.dart';
 import 'package:sudoku/core/cell_name.dart';
 import 'package:sudoku/models/board.dart';
+import 'package:sudoku/models/cell.dart';
 import 'package:sudoku/ui/widgets/candidates_widget.dart';
 
 
 class CellWidget extends StatelessWidget {
+  static String _semanticLabel(CellName name, Cell cell) {
+    if (cell.value != null) {
+      return 'Cell $name; Value: ${cell.value}';
+    } else {
+      return 'Cell $name; Candidates: ${cell.candidates}';
+    }
+  }
+
   static const textStyle = TextStyle(
     fontWeight: FontWeight.w600,  // Semi-bold
   );
@@ -25,26 +34,32 @@ class CellWidget extends StatelessWidget {
     final cell = board.cells[name]!;
     final isSelected = board.selectedCell == cell;
 
-    return GestureDetector(
-      onTap: () => board.selectCell(name),
-      child: Container(
-        decoration: BoxDecoration(
-            border: isSelected ? Border.all(
-              color: Colors.blue.withOpacity(0.8),
-            width: 4.0,
-          ) : Border.all(
-              color: Colors.black,
-            width: 1.0,
-          )
-        ),
-        child: cell.value == null ? 
-          CandidatesWidget(cell: cell) :
-          Center(
-            child: AutoScaleText(cell.value!.toString(), 0.75,
-              style: textStyle,
+    return Semantics(
+      label: CellWidget._semanticLabel(name, cell),
+      readOnly: false,
+      child: ExcludeSemantics(
+        child: GestureDetector(
+          onTap: () => board.selectCell(name),
+          child: Container(
+            decoration: BoxDecoration(
+                border: isSelected ? Border.all(
+                  color: Colors.blue.withOpacity(0.8),
+                width: 4.0,
+              ) : Border.all(
+                  color: Colors.black,
+                width: 1.0,
+              )
             ),
+            child: cell.value == null ? 
+              CandidatesWidget(cell: cell) :
+              Center(
+                child: AutoScaleText(cell.value!.toString(), 0.75,
+                  style: textStyle,
+                ),
+              ),
           ),
-      ),
+        ),
+      )
     );
   }
 } 

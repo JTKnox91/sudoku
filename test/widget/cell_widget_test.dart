@@ -114,5 +114,35 @@ void main() {
         );
       }
     });
+
+    testWidgets('provides correct semantic labels', (tester) async {
+      final board = Board();
+      const expectedValue = Value.five;
+
+      // Setup cells with and without values
+      final cellWithValue = CellWidget(row: 1, col: 1);
+      board.cells[cellWithValue.name]!.setValue(expectedValue);
+      final cellWithoutValue = CellWidget(row: 4, col: 4);
+
+      await tester.pumpWidget(CellWidgetTest([
+        [cellWithValue, cellWithoutValue]
+      ], board: board));
+
+      // Test cell with value
+      final semanticsWithValue = tester.getSemantics(find.byWidget(cellWithValue));
+      expect(
+        semanticsWithValue.label,
+        'Cell r1,c1; Value: 5',
+        reason: 'Cell with value should show its value in semantic label'
+      );
+
+      // Test cell with candidates
+      final semanticsWithoutValue = tester.getSemantics(find.byWidget(cellWithoutValue));
+      expect(
+        semanticsWithoutValue.label,
+        'Cell r4,c4; Candidates: {1, 2, 3, 4, 5, 6, 7, 8, 9}',
+        reason: 'Cell without value should show candidates in semantic label'
+      );
+    });
   });
 } 
