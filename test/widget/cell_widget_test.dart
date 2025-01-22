@@ -144,5 +144,24 @@ void main() {
         reason: 'Cell without value should show candidates in semantic label'
       );
     });
+
+    testWidgets('selects its own cell when tapped', (tester) async {
+      final board = Board();
+      final cellWidget = CellWidget(row: 3, col: 4);
+
+      await tester.pumpWidget(CellWidgetTest([
+        [cellWidget]
+      ], board: board));
+
+      // Verify cell is not selected initially
+      expect(board.selectedCell, isNull);
+
+      // Tap the cell
+      await tester.tap(find.byType(CellWidget));
+      await tester.pump();
+
+      // Verify the correct cell is selected
+      expect(board.selectedCell, equals(board.cells[cellWidget.name]));
+    });
   });
 } 

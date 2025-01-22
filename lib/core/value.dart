@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 enum Value {
   one(1),
   two(2),
@@ -14,7 +16,7 @@ enum Value {
 
   /// Return the corresponding Value enum for a valid sodoku integer.
   static Value fromInt(int number) {
-    if (!isValid(number)) {
+    if (!isValidInt(number)) {
       throw ArgumentError('Invalid Sudoku value: $number');
     }
     return <int, Value>{
@@ -30,9 +32,47 @@ enum Value {
     }[number]!;
   }
 
+  /// Return the corresponding Value enum for a valid sodoku integer.
+  static Value fromChar(String char) {
+    if (isValidChar(char)) {
+      return fromInt(int.parse(char));
+    } else {
+      throw ArgumentError('Invalid single digit char: $char');
+    }
+  }
+
+   static Value fromKey(LogicalKeyboardKey key) {
+    if (isValidKey(key)) {
+      return _validKeys[key]!;
+    } else {
+      throw ArgumentError('Invalid logical key: $key');
+    }
+  }
+
   /// Check if the number is a valid Sudoku value.
-  static bool isValid(int number) {
+  static bool isValidInt(int number) {
     return number >= 1 && number <= 9;
+  }
+
+  /// Check if the number is a valid Sudoku value.
+  static bool isValidChar(String char) {
+    return RegExp(r'^[1-9]$').hasMatch(char);
+  }
+
+  static final _validKeys = <LogicalKeyboardKey, Value>{
+    LogicalKeyboardKey.digit1: Value.one  ,
+    LogicalKeyboardKey.digit2: Value.two,
+    LogicalKeyboardKey.digit3: Value.three,
+    LogicalKeyboardKey.digit4: Value.four,
+    LogicalKeyboardKey.digit5: Value.five,
+    LogicalKeyboardKey.digit6: Value.six,
+    LogicalKeyboardKey.digit7: Value.seven,
+    LogicalKeyboardKey.digit8: Value.eight,
+    LogicalKeyboardKey.digit9: Value.nine,
+  };
+
+  static bool isValidKey(LogicalKeyboardKey key) {
+    return _validKeys.containsKey(key);
   }
 
   @override

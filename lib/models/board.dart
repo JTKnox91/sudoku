@@ -19,18 +19,43 @@ class Board with ChangeNotifier implements HasCells {
   Board() {
     for (int row = 1; row <= Board.size; row++) {
       for (int col = 1; col <= Board.size; col++) {
-        _cells[CellName(row, col)] = Cell();
+        final cell = Cell();
+        cell.addListener(notifyListeners);
+        _cells[CellName(row, col)] = cell;
       }
     }
   }
 
   void selectCell(CellName? cellName) {
     if (_selectedCellName == cellName) return;
-    if (cellName == null) {
-      _selectedCellName = null;
-    } else {
-      _selectedCellName = cellName;
-    }
+    _selectedCellName = cellName;
     notifyListeners();
+  }
+
+  void _move(int rowDelta, int colDelta) {
+    if (_selectedCellName == null) return;
+    final newRow = _selectedCellName!.row + rowDelta;
+    final newCol = _selectedCellName!.col + colDelta;
+    if (!CellName.isValidInt(newRow) ||
+        !CellName.isValidInt(newCol)) {
+      return;
+    }
+    selectCell(CellName(newRow, newCol));
+  }
+
+  void moveUp() {
+    _move(-1, 0);
+  }
+
+  void moveDown() {
+    _move(1, 0);
+  }
+
+  void moveLeft() {
+    _move(0, -1);
+  }
+
+  void moveRight() {
+    _move(0, 1);
   }
 }
