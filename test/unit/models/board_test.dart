@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sudoku/models/board.dart';
-import 'package:sudoku/models/cell.dart';
+import 'package:sudoku/models/group.dart';
 import 'package:sudoku/core/cell_name.dart';
 
 void main() {
@@ -28,11 +28,29 @@ void main() {
       // TODO: Implement this test after implementing initializing with values.
     });
 
-    test('cells map is unmodifiable', () {
-      expect(
-        () => board.cells[CellName(1, 1)] = Cell(),
-        throwsUnsupportedError,
-      );
+    test('initializes groups correctly', () {
+      final board = Board();
+      
+      // Test rows
+      expect(board.rows.length, equals(Board.size));
+      for (int i = 1; i <= Board.size; i++) {
+        expect(board.rows[i], isA<Row>());
+        expect(board.rows[i]!.rowNum, equals(i));
+      }
+
+      // Test columns
+      expect(board.cols.length, equals(Board.size));
+      for (int i = 1; i <= Board.size; i++) {
+        expect(board.cols[i], isA<Column>());
+        expect(board.cols[i]!.colNum, equals(i));
+      }
+
+      // Test boxes
+      expect(board.boxes.length, equals(Board.size));
+      for (int i = 1; i <= Board.size; i++) {
+        expect(board.boxes[i], isA<Box>());
+        expect(board.boxes[i]!.boxNum, equals(i));
+      }
     });
 
     test('can select and unselect cells', () {

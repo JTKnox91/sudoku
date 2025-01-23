@@ -2,19 +2,30 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:sudoku/core/cell_name.dart';
+import 'package:sudoku/core/constants.dart';
 import 'package:sudoku/core/has_cells.dart';
 import 'package:sudoku/models/cell.dart';
-
-class Board with ChangeNotifier implements HasCells {
-  static const int size = 9;
+import 'package:sudoku/models/group.dart';
+class Board with ChangeNotifier, HasCells {
+  static const int size = maximumGroupSize;
 
   final Map<CellName, Cell> _cells = {};
+  final Map<int, Row> _rows = {};
+  final Map<int, Column> _cols = {};
+  final Map<int, Box> _boxes = {};
   
   @override
   UnmodifiableMapView<CellName, Cell> get cells => UnmodifiableMapView(_cells);
   
+  @override
+  bool isCellNameInRange(CellName cellName) => true;
+  
   CellName? _selectedCellName;
   Cell? get selectedCell => _selectedCellName == null ? null : _cells[_selectedCellName]!;
+
+  UnmodifiableMapView<int, Row> get rows => UnmodifiableMapView(_rows);
+  UnmodifiableMapView<int, Column> get cols => UnmodifiableMapView(_cols);
+  UnmodifiableMapView<int, Box> get boxes => UnmodifiableMapView(_boxes);
   
   Board() {
     for (int row = 1; row <= Board.size; row++) {
@@ -23,6 +34,12 @@ class Board with ChangeNotifier implements HasCells {
         cell.addListener(notifyListeners);
         _cells[CellName(row, col)] = cell;
       }
+    }
+
+    for (int groupNum = 1; groupNum <= Board.size; groupNum++) {
+      _rows[groupNum] = Row(this, groupNum);
+      _cols[groupNum] = Column(this, groupNum);
+      _boxes[groupNum] = Box(this, groupNum);
     }
   }
 

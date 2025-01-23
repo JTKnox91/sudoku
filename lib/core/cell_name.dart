@@ -1,9 +1,11 @@
-class CellName {
+import 'package:sudoku/core/constants.dart';
+
+class CellName implements Comparable<CellName> {
   static bool isValidInt(int rowOrColumn) {
-    return rowOrColumn >= 1 && rowOrColumn <= 9; 
+    return rowOrColumn >= 1 && rowOrColumn <= maximumGroupSize; 
   }
 
-  final int row;
+  final int row;  
   final int col;
 
   CellName(this.row, this.col) {
@@ -24,4 +26,16 @@ class CellName {
 
   @override
   int get hashCode => Object.hash(row, col);
+
+  @override
+  int compareTo(CellName other) {
+    return _sortingIndex(this) - _sortingIndex(other);
+  }
+
+  bool operator >(CellName other) => compareTo(other) > 0;
+  bool operator <(CellName other) => compareTo(other) < 0;
+  bool operator >=(CellName other) => compareTo(other) >= 0;
+  bool operator <=(CellName other) => compareTo(other) <= 0;
+
+  static int _sortingIndex(CellName name) => (name.row -1) * maximumGroupSize + (name.col -1);
 }
