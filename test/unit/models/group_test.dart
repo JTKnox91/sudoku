@@ -56,12 +56,21 @@ void main() {
     ];
 
     for (final testCase in testCases) {
-      test('(${testCase.rowOrColOrBoxNum}) generates correct cell names', () {
+      test('(${testCase.rowOrColOrBoxNum}) sets up cells correctly', () {
         final row = board.rows[testCase.rowOrColOrBoxNum]!;
-        final cellNames = row.generateCellNames().toList();
 
-        expect(cellNames.length, equals(testCase.expectedGenerated.length));
-        expect(cellNames, equals(testCase.expectedGenerated));
+        expect(row.cells.keys.length, equals(testCase.expectedGenerated.length));
+        expect(row.cells.keys, equals(testCase.expectedGenerated),
+          reason: 'should generate the correct cell names',
+        );
+        expect(row.cells.values.toSet().length, equals(testCase.expectedGenerated.length),
+          reason: 'should have all unique cells',
+        );
+        for (final cell in row.cells.values) {
+          expect(cell.parentRow, equals(row),
+            reason: 'should assign itself as the parent row',
+          );
+        }
       });
 
       test('(${testCase.rowOrColOrBoxNum}) correctly validates cell names', () {
@@ -114,12 +123,21 @@ void main() {
     ];
 
     for (final testCase in testCases) {
-      test('(${testCase.rowOrColOrBoxNum}) generates correct cell names', () {
+      test('(${testCase.rowOrColOrBoxNum}) sets up cells correctly', () {
         final col = board.cols[testCase.rowOrColOrBoxNum]!;
-        final cellNames = col.generateCellNames().toList();
 
-        expect(cellNames.length, equals(testCase.expectedGenerated.length));
-        expect(cellNames, equals(testCase.expectedGenerated));
+        expect(col.cells.keys.length, equals(testCase.expectedGenerated.length));
+        expect(col.cells.keys, equals(testCase.expectedGenerated),
+          reason: 'should generate the correct cell names',
+        );
+        expect(col.cells.values.toSet().length, equals(testCase.expectedGenerated.length),
+          reason: 'should have all unique cells',
+        );
+        for (final cell in col.cells.values) {
+          expect(cell.parentCol, equals(col),
+            reason: 'should assign itself as the parent column',
+          );
+        }
       });
 
       test('(${testCase.rowOrColOrBoxNum}) correctly validates cell names', () {
@@ -172,12 +190,21 @@ void main() {
     ];
 
     for (final testCase in testCases) {
-      test('(${testCase.rowOrColOrBoxNum}) generates correct cell names', () {
+      test('(${testCase.rowOrColOrBoxNum}) sets up cells correctly', () {
         final box = board.boxes[testCase.rowOrColOrBoxNum]!;
-        final cellNames = box.generateCellNames().toList();
 
-        expect(cellNames.length, equals(testCase.expectedGenerated.length));
-        expect(cellNames, equals(testCase.expectedGenerated));
+        expect(box.cells.keys.length, equals(testCase.expectedGenerated.length));
+        expect(box.cells.keys, equals(testCase.expectedGenerated),
+          reason: 'should generate the correct cell names',
+        );
+        expect(box.cells.values.toSet().length, equals(testCase.expectedGenerated.length),
+          reason: 'should have all unique cells',
+        );
+        for (final cell in box.cells.values) {
+          expect(cell.parentBox, equals(box),
+            reason: 'should assign itself as the parent box',
+          );
+        }
       });
 
       test('(${testCase.rowOrColOrBoxNum}) correctly validates cell names', () {
@@ -221,40 +248,6 @@ void main() {
               reason: 'confirm other counts are unchanged');
         }
       }
-    });
-
-    test('#refreshCandidates notifies only when candidates change', () {
-      // Group is abstract. Using Column arbitraily, but it should work for any subclass.
-      final group = board.cols[1]!;
-      
-      var notificationCount = 0;
-      group.addListener(() {
-        notificationCount++;
-      });
-
-      // First refresh shouldn't notify since nothing changed
-      group.refreshCandidates();
-      expect(notificationCount, 0, reason: 'should not notify initially');
-
-      // Notification should be triggered when a cell's candidates change
-      final firstCell = group.cells.values.first;
-      firstCell.removeCandidate(Value.one);
-      expect(notificationCount, 1, reason: 'should notify when a cell\'s candidates change');
-
-      // Notification should be triggered when a cell's value changes
-      final lastCell = group.cells.values.last;
-      lastCell.setValue(Value.one);
-      expect(notificationCount, 2, reason: 'should notify when a cell\'s value changes');
-      
-      // This refresh should notify since candidates changed
-      group.refreshCandidates();
-      expect(notificationCount, 2,
-        reason: 'should not nessecarily notify on every refresh');
-
-      // Another notification triggered by a cell without changes
-      firstCell.notifyListeners();
-      expect(notificationCount, 2,
-        reason: 'should not nessecarily propogate every child notification');
     });
   });
 } 

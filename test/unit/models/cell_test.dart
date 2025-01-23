@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sudoku/core/cell_name.dart';
 import 'package:sudoku/core/value.dart';
 import 'package:sudoku/models/cell.dart';
 
@@ -7,7 +8,7 @@ void main() {
     late Cell cell;
 
     setUp(() {
-      cell = Cell();
+      cell = Cell(CellName(1, 1));
     });
 
     test('initializes with all candidates and no value', () {

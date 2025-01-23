@@ -16,17 +16,15 @@ void main() {
       expect(board.cells.values.every((cell) => cell.value == null), isTrue);
     });
 
-    test('cells are keyed by CellName', () {
+    test('cells are keyed by correct CellName', () {
       for (int row = 1; row <= 9; row++) {
         for (int col = 1; col <= 9; col++) {
           expect(board.cells[CellName(row, col)], isNotNull);
+          expect(board[CellName(row, col)].name, equals(CellName(row, col)));
         }
       }
     });
 
-    test('cells are keyed by row before column', () {
-      // TODO: Implement this test after implementing initializing with values.
-    });
 
     test('initializes groups correctly', () {
       final board = Board();

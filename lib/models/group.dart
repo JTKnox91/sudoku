@@ -7,31 +7,41 @@ import 'package:sudoku/core/value.dart';
 import 'package:sudoku/models/board.dart';
 import 'package:sudoku/models/cell.dart';
 
-abstract class Group with ChangeNotifier, HasCells {
+abstract class Group with HasCells {
   final Map<CellName, Cell> _cells = {};
   final Map<Value, int> _candidates = {
     for (final value in Value.values) value: 0,
   };
+
+  bool _isCandidatesStale = true;
   
   @override
   UnmodifiableMapView<CellName, Cell> get cells => UnmodifiableMapView(_cells);
 
-  UnmodifiableMapView<Value, int> get candidates => UnmodifiableMapView(_candidates);
+  UnmodifiableMapView<Value, int> get candidates {
+    if (_isCandidatesStale) {
+      _computeCandidates();
+    }
+    return UnmodifiableMapView(_candidates);
+  }
 
   @protected
   Iterable<CellName> generateCellNames();
 
+  @protected
+  void setParentGroup(Cell cell);
+
   Group(Board board) {
     for (final cellName in generateCellNames()) {
       final cell = board[cellName];
-      cell.addListener(refreshCandidates);
+      cell.addListener(() { _isCandidatesStale = true; });
+      setParentGroup(cell);
       _cells[cellName] = cell;
     }
-    refreshCandidates();
+    _computeCandidates();
   }
 
-  void refreshCandidates() {
-    bool hasChanged = false;
+  void _computeCandidates() {
     _candidates.updateAll((valueCandidate, oldCount) {
       int newCount = 0;
       for (final cell in cells.values) {
@@ -39,12 +49,9 @@ abstract class Group with ChangeNotifier, HasCells {
           newCount++;
         }
       }
-      if (newCount != oldCount) { hasChanged = true; }
       return newCount;
     });
-    if (hasChanged) {
-      notifyListeners();
-    }
+    _isCandidatesStale = false;
   }
 }
 
@@ -60,6 +67,11 @@ class Row extends Group {
   Iterable<CellName> generateCellNames() {
     return Iterable.generate(Board.size, (colDelta) => CellName(rowNum, 1 + colDelta));
   }
+
+  @override
+  void setParentGroup(Cell cell) {
+    cell.parentRow = this;
+  }
 }
 
 class Column extends Group {
@@ -68,11 +80,16 @@ class Column extends Group {
   Column(super.board, this.colNum);
 
   @override
-  bool isCellNameInRange(CellName cellName) => cellName.col == colNum;
+    bool isCellNameInRange(CellName cellName) => cellName.col == colNum;
 
   @override
   Iterable<CellName> generateCellNames() {
     return Iterable.generate(Board.size, (rowDelta) => CellName(1 + rowDelta, colNum));
+  }
+
+  @override
+  void setParentGroup(Cell cell) {
+    cell.parentCol = this;
   }
 }
 
@@ -98,7 +115,11 @@ class Box extends Group {
       ...Iterable.generate(3, (colDelta) => CellName(_topLeftInBox.row, _topLeftInBox.col + colDelta)),
       ...Iterable.generate(3, (colDelta) => CellName(_topLeftInBox.row+1, _topLeftInBox.col + colDelta)),
       ...Iterable.generate(3, (colDelta) => CellName(_topLeftInBox.row+2, _topLeftInBox.col + colDelta)),
-    ];
-    
+    ]; 
+  }
+
+  @override
+  void setParentGroup(Cell cell) {
+    cell.parentBox = this;
   }
 }

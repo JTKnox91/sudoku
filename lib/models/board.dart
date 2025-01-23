@@ -30,9 +30,10 @@ class Board with ChangeNotifier, HasCells {
   Board() {
     for (int row = 1; row <= Board.size; row++) {
       for (int col = 1; col <= Board.size; col++) {
-        final cell = Cell();
+        final name = CellName(row, col);
+        final cell = Cell(name);
         cell.addListener(notifyListeners);
-        _cells[CellName(row, col)] = cell;
+        _cells[name] = cell;
       }
     }
 

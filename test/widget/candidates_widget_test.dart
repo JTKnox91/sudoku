@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sudoku/core/cell_name.dart';
 import 'package:sudoku/core/value.dart';
 import 'package:sudoku/models/cell.dart';
 import 'package:sudoku/ui/widgets/candidates_widget.dart';
@@ -10,7 +11,7 @@ void main() {
     late Widget testWidget;
 
     setUp(() {
-      cell = Cell();
+      cell = Cell(CellName(1, 1));
       testWidget = MaterialApp(
         home: Scaffold(
           body: SizedBox(
